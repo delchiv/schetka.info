@@ -35,9 +35,11 @@ class NewVisitorTest(LiveServerTestCase):
         # Она набрала "Buy peacock feathers" в поле ввода (Хобби Эдит - приманки для рыбалки)
         inputbox.send_keys('Buy peacock feathers')
 
-        # Когда она нажала Enter, страница обновилась. Теперь в списке значится
-        # "1: Buy peacock feathers"
+        # Когда она нажала Enter, страница обновилась (новый url). 
+        # Теперь в списке значится "1: Buy peacock feathers"
         inputbox.send_keys(Keys.ENTER)
+        edith_url = self.browser.current_url
+        self.assertRegex(edith_url, '/lists/.+')
         self.check_for_row_in_list_table('1: Buy peacock feathers')
 
         # На странице также осталось поле, для ввода следующего задания.
@@ -50,10 +52,32 @@ class NewVisitorTest(LiveServerTestCase):
         self.check_for_row_in_list_table('1: Buy peacock feathers')
         self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
 
-        # Эдит стало интересно, запомнит ли сайт ее список. Затем она обратила внимание,
-        # что сайт сгенерировал уникальный URL для ее списка.
+        # Новый пользователь Фрэнсис зашел на сайт
+         
+        ## Используем новую сессию браузера, чтоб убедиться, что данные прошлого пользователя не сохранены
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # Фрэнсис заходит на главную. Там нет информации, принадлежащей Эдит
+        self.browser.get(self.live_server_url)
+        page_text = self.borwser.find_element_by_tag_name('body').text
+        self.assertNotIn('peacock feathers', page_text)
+        self.assertNotIn('make a fly', page_text)
+
+        # Фрэнсис создает новый список, добавляя новый пункт. У него все прозаичней...
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+
+        # Фрэнсис получает свой собственный уникальный url
+        francis_url = self.browser.current_url
+        self.assertRegex(francis_url, '/lists/.+')
+        self.assertNotEqual(francis_url, edith_url)
+
+        # И снова, тут нет никакой связи со списком Эдит
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('peacock feathers', page_text)
+        self.assertIn('Buy milk', page_text)
+
         self.fail('Finish the test!')
 
-# Она перешла по предложенной ссылке и увидела свой список
-
-# Удовлетворенная, она пошла спать дальше :)
