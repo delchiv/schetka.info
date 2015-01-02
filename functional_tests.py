@@ -19,7 +19,7 @@ class NewVisitorTest(unittest.TestCase):
 
         # Она обратила внимание, что страница называется To-Do, и в заголовке написано To-Do
         self.assertIn('To-Do', self.browser.title)
-        header_text = self.browser.find_element_by_tag_name('<h1>').test
+        header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
 
         # Ей немедленно было предложено создать (ввсети) какое-то задание
@@ -31,19 +31,25 @@ class NewVisitorTest(unittest.TestCase):
 
         # Когда она нажала Enter, страница обновилась. Теперь в списке значится
         # "1: Buy peacock feathers"
-        inputbox.send_keys(Keys.Enter)
+        inputbox.send_keys(Keys.ENTER)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
-        self.assertTrue(any(row.text == '1: Buy peacock feathers' for row in rows))
+        self.assertIn('1: Buy peacock feathers', [row.text for row in rows])
 
         # На странице также осталось поле, для ввода следующего задания.
         # Эдит ввела "Use peacock feathers to make a fly" (она очень методична)
+        # Страница снова обновилась и теперь отображает оба пункта
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Use peacock feathers to make a fly')
+        inputbox.send_keys(Keys.ENTER)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn('2: Use peacock feathers to make a fly', [row.text for row in rows])
+
+        # Эдит стало интересно, запомнит ли сайт ее список. Затем она обратила внимание,
+        # что сайт сгенерировал уникальный URL для ее списка.
         self.fail('Finish the test!')
-
-# Страница снова обновилась и теперь отображает оба пункта
-
-# Эдит стало интересно, запомнит ли сайт ее список. Затем она обратила внимание,
-# что сайт сгенерировал уникальный URL для ее списка.
 
 # Она перешла по предложенной ссылке и увидела свой список
 
