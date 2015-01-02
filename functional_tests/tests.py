@@ -1,10 +1,11 @@
 ﻿# coding: utf-8
 
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
@@ -20,7 +21,7 @@ class NewVisitorTest(unittest.TestCase):
     def test_can_start_a_list_and_retrive_it_later(self):
         # Эдит услышала о новом хорошем онлайновом to-do листе.
         # Решила проверить его (листа) домашнюю страницу
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         # Она обратила внимание, что страница называется To-Do, и в заголовке написано To-Do
         self.assertIn('To-Do', self.browser.title)
@@ -56,6 +57,3 @@ class NewVisitorTest(unittest.TestCase):
 # Она перешла по предложенной ссылке и увидела свой список
 
 # Удовлетворенная, она пошла спать дальше :)
-
-if __name__ == '__main__':
-    unittest.main()
