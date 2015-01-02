@@ -12,6 +12,11 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     def test_can_start_a_list_and_retrive_it_later(self):
         # Эдит услышала о новом хорошем онлайновом to-do листе.
         # Решила проверить его (листа) домашнюю страницу
@@ -32,9 +37,7 @@ class NewVisitorTest(unittest.TestCase):
         # Когда она нажала Enter, страница обновилась. Теперь в списке значится
         # "1: Buy peacock feathers"
         inputbox.send_keys(Keys.ENTER)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Buy peacock feathers', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Buy peacock feathers')
 
         # На странице также осталось поле, для ввода следующего задания.
         # Эдит ввела "Use peacock feathers to make a fly" (она очень методична)
@@ -43,9 +46,8 @@ class NewVisitorTest(unittest.TestCase):
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
 
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('2: Use peacock feathers to make a fly', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Buy peacock feathers')
+        self.check_for_row_in_list_table('2: Use peacock feathers to make a fly')
 
         # Эдит стало интересно, запомнит ли сайт ее список. Затем она обратила внимание,
         # что сайт сгенерировал уникальный URL для ее списка.
