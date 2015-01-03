@@ -55,12 +55,12 @@ class NewVisitorTest(LiveServerTestCase):
         # Новый пользователь Фрэнсис зашел на сайт
          
         ## Используем новую сессию браузера, чтоб убедиться, что данные прошлого пользователя не сохранены
-        self.browser.quit()
-        self.browser = webdriver.Firefox()
+        ## self.browser.quit()
+        ## self.browser = webdriver.Firefox()
 
         # Фрэнсис заходит на главную. Там нет информации, принадлежащей Эдит
         self.browser.get(self.live_server_url)
-        page_text = self.borwser.find_element_by_tag_name('body').text
+        page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
 
