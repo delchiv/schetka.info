@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 
 from .views import home_page
-from .models import Item
+from .models import Item, List
 
 # Create your tests here.
 
@@ -21,16 +21,24 @@ class HomePageTest(TestCase):
         self.assertEqual(response.content.decode(), expected_html)
 
 
-class ItemModelTest(TestCase):
+class ListAndItemModelTest(TestCase):
 
     def test_saving_and_retrieving_items(self):
+        list_ = List()
+        list_.save()
+
         item = Item()
         item.text = 'First item'
+        item.list = list_
         item.save()
        
         item = Item()
         item.text = 'Second item'
+        item.list = list_
         item.save()
+
+        saved_list = List.objects.first()
+        self.assertEqual(saved_list, list_)
 
         saved_items = Item.objects.all()
 
@@ -38,13 +46,16 @@ class ItemModelTest(TestCase):
         first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, 'First item')
+        self.assertEqual(first_saved_item.list, saved_list)
         self.assertEqual(second_saved_item.text, 'Second item')
+        self.assertEqual(second_saved_item.list, saved_list)
 
 class ListViewTest(TestCase):
 
     def test_displays_all_items(self):
-        Item.objects.create(text='Item 1')
-        Item.objects.create(text='Item 2')
+        list_ = List.objects.create()
+        Item.objects.create(text='Item 1', list=list_)
+        Item.objects.create(text='Item 2', list=list_)
 
         response = self.client.get('/lists/new-list/')
 
