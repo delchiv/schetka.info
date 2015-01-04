@@ -10,7 +10,7 @@ from .models import Item
 
 class HomePageTest(TestCase):
 
-    def test_root_resolvers_to_home_page_view(self):
+    def test_root_resolves_to_home_page_view(self):
         url = resolve('/')
         self.assertEqual(url.func, home_page)
 
@@ -19,32 +19,6 @@ class HomePageTest(TestCase):
         response = home_page(request)
         expected_html = render_to_string('home.html')
         self.assertEqual(response.content.decode(), expected_html)
-
-    def test_home_page_can_save_POST_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new list item'
-
-        response = home_page(request)
-
-        self.assertEqual(Item.objects.count(), 1)
-        item = Item.objects.first()
-        self.assertEqual(item.text, 'A new list item')
-
-    def test_home_page_can_redirect_after_POST(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new list item'
-
-        response = home_page(request)
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/lists/new-list/')
-
-    def test_home_page_saves_items_only_when_necessary(self):
-        request = HttpRequest()
-        home_page(request)
-        self.assertEqual(Item.objects.count(), 0)
 
 
 class ItemModelTest(TestCase):
@@ -80,3 +54,23 @@ class ListViewTest(TestCase):
     def test_uses_list_template(self):
         response = self.client.get('/lists/new-list/')
         self.assertTemplateUsed(response, 'list.html')
+
+class NewListTest(TestCase):
+
+    def test_saving_a_POST_request(self):
+        self.client.post(
+            '/lists/new',
+            data = {'item_text':'A new list item'}
+        )
+
+        self.assertEqual(Item.objects.count(), 1)
+        item = Item.objects.first()
+        self.assertEqual(item.text, 'A new list item')
+
+    def test_redirects_after_POST(self):
+        response = self.client.post(
+            '/lists/new',
+            data = {'item_text':'A new list item'}
+        )
+
+        self.assertRedirects(response, '/lists/new-list/')
