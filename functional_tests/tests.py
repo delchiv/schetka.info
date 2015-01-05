@@ -8,7 +8,7 @@ import unittest
 class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Firefox()
-        self.browser.implicitly_wait(3)
+        self.browser.implicitly_wait(5)
 
     def tearDown(self):
         self.browser.quit()
@@ -55,8 +55,8 @@ class NewVisitorTest(LiveServerTestCase):
         # Новый пользователь Фрэнсис зашел на сайт
          
         ## Используем новую сессию браузера, чтоб убедиться, что данные прошлого пользователя не сохранены
-        ## self.browser.quit()
-        ## self.browser = webdriver.Firefox()
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
 
         # Фрэнсис заходит на главную. Там нет информации, принадлежащей Эдит
         self.browser.get(self.live_server_url)
@@ -79,5 +79,18 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
 
-        self.fail('Finish the test!')
+    def test_layout_and_styling(self):
+        # Эдит зашла на домашнюю страницу
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
 
+        # Она заметила, что поле ввода отцентрировано
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=5)
+
+        # В начатом ею списке поле ввода тоже отцентировано
+        inputbox.send_keys('testitem\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=5)
+
+ 
