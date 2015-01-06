@@ -7,20 +7,19 @@ from selenium.webdriver.common.keys import Keys
 
 class NewVisitorTest(StaticLiveServerTestCase):
 
-#    Все это реализовано и без нас :)
-#    @classmethod
-#    def setUpClass(cls):
-#        for arg in sys.argv:
-#            if 'liveserver' in arg:
-#                cls.server_url = 'http://'+arg.split('=')[1]
-#                return
-#        super.setUpClass()
-#        cls.server_url = cls.live_server_url
-#
-#    @classmethod
-#    def tearDownClass(cls):
-#        if cls.server_url == cls.live_server_url:
-#            super().tearDownClass()
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = 'http://'+arg.split('=')[1]
+                return
+        super.setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super().tearDownClass()
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -38,7 +37,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
     def test_can_start_a_list_and_retrive_it_later(self):
         # Эдит услышала о новом хорошем онлайновом to-do листе.
         # Решила проверить его (листа) домашнюю страницу
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
 
         # Она обратила внимание, что страница называется To-Do, и в заголовке написано To-Do
         self.assertIn('To-Do', self.browser.title)
@@ -77,7 +76,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.browser = webdriver.Firefox()
 
         # Фрэнсис заходит на главную. Там нет информации, принадлежащей Эдит
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('peacock feathers', page_text)
         self.assertNotIn('make a fly', page_text)
@@ -99,7 +98,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
     def test_layout_and_styling(self):
         # Эдит зашла на домашнюю страницу
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
 
         # Она заметила, что поле ввода отцентрировано
