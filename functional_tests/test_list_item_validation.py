@@ -15,7 +15,7 @@ class ItemValidationTest(FunctionalTest):
 
         # Главная страница обновилась и она увидела сообщение об ошибке
         error = self.browser.find_element_by_css_selector('.has-error')
-        self.assertEqual(error.text, 'Пункт не может быть пустым')
+        self.assertEqual(error.text, 'You can`t have an empty list item')
 
         # Она попыталась еще раз, набрав некоторый текст. Теперь добавление сработало.
         self.browser.find_element_by_id('id_new_item').send_keys('Не пустой пункт\n')
@@ -25,7 +25,7 @@ class ItemValidationTest(FunctionalTest):
         # Но получила сообщение об ошибке.
         self.browser.find_element_by_id('id_new_item').send_keys('\n')
         error = self.browser.find_element_by_css_selector('.has-error')
-        self.assertEqual(error.text, 'Пункт не может быть пустым')
+        self.assertEqual(error.text, 'You can`t have an empty list item')
        
         # Исправила ситуацию, введя некоторый текст
         self.browser.find_element_by_id('id_new_item').send_keys('Еще не пустой пункт\n')
