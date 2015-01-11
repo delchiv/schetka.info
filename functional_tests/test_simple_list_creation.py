@@ -17,7 +17,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertIn('To-Do', header_text)
 
         # Ей немедленно было предложено создать (ввсети) какое-то задание
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.get_item_input_box()
         self.assertEqual(inputbox.get_attribute('placeholder'), 'Enter a to-do item')
 
         # Она набрала "Buy peacock feathers" в поле ввода (Хобби Эдит - приманки для рыбалки)
@@ -33,7 +33,7 @@ class NewVisitorTest(FunctionalTest):
         # На странице также осталось поле, для ввода следующего задания.
         # Эдит ввела "Use peacock feathers to make a fly" (она очень методична)
         # Страница снова обновилась и теперь отображает оба пункта
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.get_item_input_box()
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
 
@@ -54,7 +54,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertNotIn('make a fly', page_text)
 
         # Фрэнсис создает новый список, добавляя новый пункт. У него все прозаичней...
-        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox = self.get_item_input_box()
         inputbox.send_keys('Buy milk')
         inputbox.send_keys(Keys.ENTER)
 
