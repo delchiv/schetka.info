@@ -1,3 +1,7 @@
+# coding: utf-8
+
+from unittest import skip
+
 from django.core.urlresolvers import resolve, reverse
 from django.test import TestCase
 from django.http import HttpRequest
@@ -99,6 +103,18 @@ class ListViewTest(TestCase):
         response = self.client.get('/lists/%s/' % (list_.id,))
         self.assertIsInstance(response.context['form'], ItemForm)
         self.assertContains(response, 'name="text"')
+
+    @skip
+    def test_duplicate_item_validatoin_errors_end_up_on_lists_page(self):
+        list_ = List.objects.create()
+        item = Item.objects.create(text='some text', list=list_)
+        response = self.client.post('/lists/%s/' % (list_.id,), data={'text':'some text'})
+        expected_error = "You've already got this in your list"
+
+        self.assertContains(response, expected_error)
+        self.assertTemplateUsed(response, 'list.html')
+        self.assertEqual(Item.objects.count(), 1)
+
 
 class NewListTest(TestCase):
 
