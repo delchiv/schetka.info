@@ -32,4 +32,17 @@ class ItemValidationTest(FunctionalTest):
         self.check_for_row_in_list_table('1: Не пустой пункт')
         self.check_for_row_in_list_table('2: Еще не пустой пункт')
 
+    def test_cannot_add_duplicate_items(self):
+        # Эдит заходит на главную страницу и начинает новый список
+        self.browser.get(self.server_url)
+        self.get_item_input_box().send_keys('Buy wellies\n')
+        self.check_for_row_in_list_table('1: Buy wellies')
+        
+        # Случайно она пытается добавить элемент повторно
+        self.get_item_input_box().send_keys('Buy wellies\n')
+
+        # И видит информативное сообщение об ошибке
+        self.check_for_row_in_list_table('1: Buy wellies')
+        error = self.browser.find_element_by_css_selector('.has_error')
+        self.assertEqual(error, "You've already got this in your list")
 
